@@ -24,6 +24,9 @@ class DashCamPreprocessor:
         # Check if camera opened successfully
         # self.video_file = "/Users/lvllvl/Dev/dev_SLAM/SLAM/data/train.mp4"
 
+        # TODO: update frameNum to 0 or 1
+        # TODO: Figure out how to save frames  and for how long, e.g., discard after optical flow?
+
         frameNum = 90
         while True:
             success, frame = self.cap.read()
