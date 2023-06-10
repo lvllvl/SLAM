@@ -1,7 +1,11 @@
 import cv2
 import numpy as np
 
-# Create a VideoCapture object and read from input file
+'''
+Create a VideoCapture object and read from input file
+Process the video footage 
+Return the each frame processed and saved as a binary image
+'''
 class DashCamPreprocessor:
 
     def __init__(self, video_file):
@@ -43,10 +47,10 @@ class DashCamPreprocessor:
                 break
 
 
-        src = cv2.imread( self.cap ) 
+        # src = cv2.imread( self.cap ) 
         
         # apply grayscale to reduce the amount of data that needs to be processes
-        grayscale_video = cv2.cvtColor( src, cv2.COLOR_BGR2GRAY )
+        # grayscale_video = cv2.cvtColor( src, cv2.COLOR_BGR2GRAY )
 
         # # apply blur to reduce noise
         # blurred_video = cv2.medianBlur( grayscale_video, 5 )
@@ -56,4 +60,4 @@ class DashCamPreprocessor:
 
         # # Return the binary image
         # return binary_video
-        return src
+        # return src
