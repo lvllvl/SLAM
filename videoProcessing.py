@@ -21,17 +21,13 @@ class DashCamPreprocessor:
             convert each frame to blur
             convert each frame to binary 
         '''
-        # Check if camera opened successfully
-        # self.video_file = "/Users/lvllvl/Dev/dev_SLAM/SLAM/data/train.mp4"
 
-        # TODO: update frameNum to 0 or 1
-        # TODO: Figure out how to save frames  and for how long, e.g., discard after optical flow?
-
-        frameNum = 90
+        # TODO: #2 Figure out how to save frames  and for how long, e.g., discard after optical flow?
+        frameNum = 1 
         while True:
             success, frame = self.cap.read()
             if not success:
-                break
+                break # TODO: #1 create a way to log this error and in project in general
             frameNum += 1
 
             print(frameNum)
