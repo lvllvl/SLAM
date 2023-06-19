@@ -45,7 +45,7 @@ class DashCamPreprocessor:
             if frameNum == 100:
                 break
 
-
+# TODO: #3 Add testing framework to this code 
         # src = cv2.imread( self.cap ) 
         
         # apply grayscale to reduce the amount of data that needs to be processes
