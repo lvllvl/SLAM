@@ -44,19 +44,3 @@ class DashCamPreprocessor:
             cv2.waitKey(250)
             if frameNum == 100:
                 break
-
-# TODO: #3 Add testing framework to this code 
-        # src = cv2.imread( self.cap ) 
-        
-        # apply grayscale to reduce the amount of data that needs to be processes
-        # grayscale_video = cv2.cvtColor( src, cv2.COLOR_BGR2GRAY )
-
-        # # apply blur to reduce noise
-        # blurred_video = cv2.medianBlur( grayscale_video, 5 )
-
-        # # threshold the video to make it black and white
-        # binary_video = cv2.threshold( blurred_video, 127, 255, cv2.THRESH_BINARY )[1]
-
-        # # Return the binary image
-        # return binary_video
-        # return src
