@@ -1,91 +1,68 @@
-# !/usr/bin/env python3
-
-import cv2
 import numpy as np
+import cv2 as cv
+import argparse
 
-def lucas_kanade_method( video_path ):
+parser = argparse.ArgumentParser(description='This sample demonstrates Lucas-Kanade Optical Flow calculation. \
+                                              The example file can be downloaded from: \
+                                              https://www.bogotobogo.com/python/OpenCV_Python/images/mean_shift_tracking/slow_traffic_small.mp4')
+parser.add_argument('image', type=str, help='path to image file')
+args = parser.parse_args()
 
-    # Read the video file
-    cap = cv2.VideoCapture( video_path )
+cap = cv.VideoCapture(args.image)
 
-    # Parameters for Lucas Kanade optical flow
-    lk_params = dict( 
-        winSize = (15,15),
-        maxLevel = 2,
-        criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03)
-    )
+# params for ShiTomasi corner detection
+feature_params = dict( maxCorners = 100,
+                       qualityLevel = 0.3,
+                       minDistance = 7,
+                       blockSize = 7 )
 
-    # Create random colors
-    color = np.random.randint(0, 255, (100, 3))
+# Parameters for lucas kanade optical flow
+lk_params = dict( winSize  = (15, 15),
+                  maxLevel = 2,
+                  criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
 
-    # Take first frame and find corners in it
-    ret, old_frame = cap.read()
-    old_frame = cv2.cvtColor( old_frame, cv2.COLOR_BGR2GRAY )
-    p0 = cv2.goodFeaturesToTrack( 
-        old_frame, 
-        mask = None, 
-        **dict( maxCorners = 100, qualityLevel = 0.3, minDistance = 7, blockSize = 7 ) 
-        )
-    # Create a mask image for drawing purposes
-    mask = np.zeros_like( old_frame )
+# Create some random colors
+color = np.random.randint(0, 255, (100, 3))
 
-    frame_num = 1
-    # while frame_num < 50:
-    while True:
-        # read the freame 
-        ret, frame = cap.read()
-        if not ret:
-            break
+# Take first frame and find corners in it
+ret, old_frame = cap.read()
+old_gray = cv.cvtColor(old_frame, cv.COLOR_BGR2GRAY)
+p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
 
-        print( "Frame number: ", frame_num)
-    
-        frame_gray = cv2.cvtColor( frame, cv2.COLOR_BGR2GRAY )
+# Create a mask image for drawing purposes
+mask = np.zeros_like(old_frame)
 
-        #Calculate Optical Flow
-        p1, st, err = cv2.calcOpticalFlowPyrLK( 
-            old_frame, 
-            frame_gray, 
-            p0, 
-            None, 
-            **lk_params 
-            )
-        
-        # print( "pi type: ", type(p1), "st type: ", type(st), "err type: ", type(err) )
-        # break 
+while(1):
+    ret, frame = cap.read()
+    if not ret:
+        print('No frames grabbed!')
+        break
 
-        
+    frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-        # Select good points
-        good_new = p1[ st == 1 ]
-        good_old = p0[ st == 1 ]
+    # calculate optical flow
+    p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)
 
-        # draw the tracks
-        for i, (new, old) in enumerate( zip( good_new, good_old )):
+    # Select good points
+    if p1 is not None:
+        good_new = p1[st==1]
+        good_old = p0[st==1]
 
-            a, b = new.ravel()
-            c, d = old.ravel()
+    # draw the tracks
+    for i, (new, old) in enumerate(zip(good_new, good_old)):
+        a, b = new.ravel()
+        c, d = old.ravel()
+        mask = cv.line(mask, (int(a), int(b)), (int(c), int(d)), color[i].tolist(), 2)
+        frame = cv.circle(frame, (int(a), int(b)), 5, color[i].tolist(), -1)
+    img = cv.add(frame, mask)
 
-            a, b = int(a), int(b)
-            c, d = int(c), int(d)
-            
-            mask = cv2.line( mask, (a,b), (c,d), color[i].tolist(), 2 )
-            frame = cv2.circle( frame, (a,b), 5, color[i].tolist(), -1 )
+    cv.imshow('frame', img)
+    k = cv.waitKey(30) & 0xff
+    if k == 27:
+        break
 
-        # Display the demo
-        # print( "Frame size: ", frame[:, :, 0].shape )
-        # print( "Mask size: ", mask.shape )
-          
-        img = cv2.add( frame[:,:,0], mask )
-        cv2.imshow( "frame", img )
-        k = cv2.waitKey( 25 ) & 0xFF
+    # Now update the previous frame and previous points
+    old_gray = frame_gray.copy()
+    p0 = good_new.reshape(-1, 1, 2)
 
-        if k == 27:
-            break
-
-        # Now update the previous frame and previous points
-        old_gray = frame_gray.copy()
-        p0 = good_new.reshape( -1, 1, 2 )
-        frame_num += 1
-
-if __name__ == "__main__":
-    lucas_kanade_method( "data/test.mp4" )
+cv.destroyAllWindows()
