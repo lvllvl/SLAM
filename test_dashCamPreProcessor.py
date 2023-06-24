@@ -1,7 +1,5 @@
 import unittest
-# from videoProcessing import DashCamPreProcessor
-import videoProcessing
-
+from video_process import DashCamPreprocessor
 class TestDashCamPreProcessor(unittest.TestCase):
 
     # def test_openVideo( self ):
