@@ -34,9 +34,10 @@ mask = np.zeros_like(old_frame)
 
 while(1):
     ret, frame = cap.read()
-    if not ret:
-        print('No frames grabbed!')
-        break
+    assert ret, "ret: No frames grabbed!"
+    # if not ret:
+    #     print('No frames grabbed!')
+    #     break
 
     frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
