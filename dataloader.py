@@ -51,7 +51,7 @@ val_dataset = SegmentationDataset(
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
-# Now you can iterate over train_loader and val_loader during training and validation
+# Iterate over train_loader and val_loader during training and validation
 def get_dataloaders(train_dir, train_maskdir, val_dir, val_maskdir, batch_size):
     # Define transformations
     transform = transforms.Compose([

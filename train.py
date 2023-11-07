@@ -54,7 +54,7 @@ def main():
     
     num_epochs = 25  # Number of epochs to train for
     best_val_loss = float('inf')
-    checkpoint_dir = '' # TODO: add the right path here
+    checkpoint_dir = '/content/drive/MyDrive/Colab Notebooks/unet-checkpoints' # TODO: add the right path here
     save_frequency = 5  # Save every 5 epochs, checkpoint
 
     # Create checkpoint directory if directory DNE
@@ -77,9 +77,8 @@ def main():
         if (epoch + 1) % save_frequency == 0:
             periodic_checkpoint_path = os.path.join( checkpoint_dir, f'model_checkpoint_epoch_{epoch+1}.pth')
             # TODO: add the right path below
-            torch.save( model.state_dict(), f'path/to/save/model/model_checkpoint_epoch_{epoch+1}.pth')
+            torch.save( model.state_dict(), f'/content/drive/MyDrive/Colab Notebooks/unet-checkpoints/model_checkpoint_epoch_{epoch+1}.pth')
             print( f"Periodic checkpoint saved: Epoch {epoch+1}, Validation Loss: {val_loss:.4f}")
-        # add validation loop and early stopping logic
 
 if __name__ == '__main__':
     main()
