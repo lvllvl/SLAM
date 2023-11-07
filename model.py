@@ -1,1 +1,13 @@
-# create a UNet model here
+from config import (
+    TRAIN_IMAGE_DIR,
+    TRAIN_MASK_DIR,
+    VAL_IMAGE_DIR,
+    VAL_MASK_DIR,
+    CHECKPOINT_DIR,
+    LEARNING_RATE,
+    BATCH_SIZE,
+    NUM_EPOCHS,
+    NUM_CLASSES,
+    MODEL_SAVE_NAME,
+    SAVE_FREQUENCY,
+)

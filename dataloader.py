@@ -4,6 +4,17 @@ from PIL import Image
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+from config import (
+    BATCH_SIZE,
+    IMG_HEIGHT,
+    IMG_WIDTH,
+    NORMALIZE_MEAN,
+    NORMALIZE_STD,
+    TRAIN_IMAGE_DIR,
+    TRAIN_MASK_DIR,
+    VAL_IMAGE_DIR,
+    VAL_MASK_DIR,
+)
 
 class SegmentationDataset(Dataset):
     def __init__(self, image_dir, mask_dir, transform=None):
@@ -29,35 +40,35 @@ class SegmentationDataset(Dataset):
 
 # Define transformations
 transform = transforms.Compose([
-    transforms.Resize((256, 256)),  # Resize images to a fixed size
+    transforms.Resize((IMG_WIDTH, IMG_HEIGHT)),  # Resize images to a fixed size
     transforms.ToTensor(),  # Convert images and masks to PyTorch tensors
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize images
+    transforms.Normalize(mean=NORMALIZE_MEAN, std=NORMALIZE_STD)  # Normalize images
 ])
 
 # Create dataset
 train_dataset = SegmentationDataset(
-    image_dir='dataset_root/train/images',
-    mask_dir='dataset_root/train/masks',
+    image_dir=TRAIN_IMAGE_DIR,
+    mask_dir=TRAIN_MASK_DIR,
     transform=transform
 )
 
 val_dataset = SegmentationDataset(
-    image_dir='dataset_root/val/images',
-    mask_dir='dataset_root/val/masks',
+    image_dir=VAL_IMAGE_DIR,
+    mask_dir=VAL_MASK_DIR,
     transform=transform
 )
 
 # Create data loaders
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 # Iterate over train_loader and val_loader during training and validation
 def get_dataloaders(train_dir, train_maskdir, val_dir, val_maskdir, batch_size):
     # Define transformations
     transform = transforms.Compose([
-        transforms.Resize((256, 256)),  # Resize images to a fixed size
+        transforms.Resize((IMG_WIDTH, IMG_HEIGHT)),  # Resize images to a fixed size
         transforms.ToTensor(),  # Convert images and masks to PyTorch tensors
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize images
+        transforms.Normalize(mean=NORMALIZE_MEAN, std=NORMALIZE_STD)  # Normalize images
     ])
 
     # Create datasets

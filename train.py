@@ -13,13 +13,9 @@ from config import (
     LEARNING_RATE,
     BATCH_SIZE,
     NUM_EPOCHS,
-    IMG_HEIGHT,
-    IMG_WIDTH,
     NUM_CLASSES,
     MODEL_SAVE_NAME,
     SAVE_FREQUENCY,
-    NORMALIZE_MEAN,
-    NORMALIZE_STD,
 )
 
 # Now you can use these variables in your main script
@@ -61,22 +57,22 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet().to(device)
     criterion = torch.nn.CrossEntropyLoss() # or any other appropriate loss function
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     # Reduce LR on Plateau by 0.1 if val loss does not decrease for 2 epochs
     scheduler = ReduceLROnPlateau( optimizer, 'min', patience=2, factor=0.1, verbose=True )
 
     train_loader, val_loader = get_dataloaders(
-        train_dir='dataset_root/train/images',
-        train_maskdir='dataset_root/train/masks',
-        val_dir='dataset_root/val/images',
-        val_maskdir='dataset_root/val/masks',
-        batch_size=32
+        train_dir=TRAIN_IMAGE_DIR,
+        train_maskdir=TRAIN_MASK_DIR,
+        val_dir=VAL_IMAGE_DIR,
+        val_maskdir=VAL_MASK_DIR,
+        batch_size=BATCH_SIZE
     )
     
-    num_epochs = 25  # Number of epochs to train for
+    num_epochs = NUM_EPOCHS  # Number of epochs to train for
     best_val_loss = float('inf')
-    checkpoint_dir = '/content/drive/MyDrive/Colab Notebooks/unet-checkpoints' # TODO: add the right path here
-    save_frequency = 5  # Save every 5 epochs, checkpoint
+    checkpoint_dir = CHECKPOINT_DIR 
+    save_frequency = SAVE_FREQUENCY  # Save every 5 epochs, checkpoint
 
     # Create checkpoint directory if directory DNE
     if not os.path.exists( checkpoint_dir ):
