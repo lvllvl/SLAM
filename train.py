@@ -4,6 +4,27 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from model import UNet
 from dataloader import get_dataloaders
 import os
+from config import (
+    TRAIN_IMAGE_DIR,
+    TRAIN_MASK_DIR,
+    VAL_IMAGE_DIR,
+    VAL_MASK_DIR,
+    CHECKPOINT_DIR,
+    LEARNING_RATE,
+    BATCH_SIZE,
+    NUM_EPOCHS,
+    IMG_HEIGHT,
+    IMG_WIDTH,
+    NUM_CLASSES,
+    MODEL_SAVE_NAME,
+    SAVE_FREQUENCY,
+    NORMALIZE_MEAN,
+    NORMALIZE_STD,
+)
+
+# Now you can use these variables in your main script
+
+
 
 def train_one_epoch(model, dataloader, optimizer, criterion, device):
     model.train()
