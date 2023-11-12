@@ -1,4 +1,3 @@
-# config.py
 # Paths
 TRAIN_IMAGE_DIR = '/content/dataset_root/train/images'
 TRAIN_MASK_DIR = '/content/dataset_root/train/masks'

@@ -18,10 +18,6 @@ from config import (
     SAVE_FREQUENCY,
 )
 
-# Now you can use these variables in your main script
-
-
-
 def train_one_epoch(model, dataloader, optimizer, criterion, device):
     model.train()
     running_loss = 0.0
