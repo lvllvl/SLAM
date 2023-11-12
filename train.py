@@ -25,16 +25,24 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
     for images, masks in dataloader:
         images, masks = images.to(device), masks.to(device)
 
-        optimizer.zero_grad()
+        # Forward pass
         outputs = model(images)
+
+        # Squeeze the channel dimension if necessary
+        if masks.ndim == 4 and masks.shape[1] == 1:
+            masks = masks.squeeze(1)
+
+        # Calculate loss
         loss = criterion(outputs, masks)
+
+        # Backward pass and optimization
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
         running_loss += loss.item()
 
-    epoch_loss = running_loss / len(dataloader)
-    return epoch_loss
+    return running_loss / len(dataloader)
 
 def validate( model, dataloader, criterion, device ):
     model.eval()
@@ -48,50 +56,54 @@ def validate( model, dataloader, criterion, device ):
     val_loss = running_loss / len( dataloader ) 
     return val_loss
 
-
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet().to(device)
-    criterion = torch.nn.CrossEntropyLoss() # or any other appropriate loss function
+    print(f'Model Summary:\n{model}')  # Model summary
+
+    criterion = torch.nn.CrossEntropyLoss()  # Loss function
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
-    # Reduce LR on Plateau by 0.1 if val loss does not decrease for 2 epochs
-    scheduler = ReduceLROnPlateau( optimizer, 'min', patience=2, factor=0.1, verbose=True )
+
+    scheduler = ReduceLROnPlateau(optimizer, 'min', patience=2, factor=0.1, verbose=True)
 
     train_loader, val_loader = get_dataloaders(
+        # DataLoader setup
         train_dir=TRAIN_IMAGE_DIR,
         train_maskdir=TRAIN_MASK_DIR,
         val_dir=VAL_IMAGE_DIR,
         val_maskdir=VAL_MASK_DIR,
         batch_size=BATCH_SIZE
     )
-    
-    num_epochs = NUM_EPOCHS  # Number of epochs to train for
-    best_val_loss = float('inf')
-    checkpoint_dir = CHECKPOINT_DIR 
-    save_frequency = SAVE_FREQUENCY  # Save every 5 epochs, checkpoint
 
-    # Create checkpoint directory if directory DNE
-    if not os.path.exists( checkpoint_dir ):
-        os.makedirs( checkpoint_dir )
+    num_epochs = NUM_EPOCHS
+    best_val_loss = float('inf')
+    checkpoint_dir = CHECKPOINT_DIR
+    save_frequency = SAVE_FREQUENCY
+
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
 
     for epoch in range(num_epochs):
-        train_loss = train_one_epoch(model, train_loader, optimizer, criterion, device)
-        val_loss = validate( model, val_loader, criterion, device )
-        print(f'Epoch {epoch+1}/{num_epochs}, Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}')
+        try:
+            train_loss = train_one_epoch(model, train_loader, optimizer, criterion, device)
+            val_loss = validate(model, val_loader, criterion, device)
+            print(f'Epoch {epoch+1}/{num_epochs}, Training Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}')
 
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            checkpoint_path = os.path.join(checkpoint_dir, f'model_best.pth')
-            torch.save(model.state_dict(), checkpoint_path)
-            print(f"Checkpoint saved: Epoch {epoch+1}, Validation Loss: {val_loss:.4f}")
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                checkpoint_path = os.path.join(checkpoint_dir, f'model_best.pth')
+                torch.save(model.state_dict(), checkpoint_path)
+                print(f"Best model saved at {checkpoint_path}")
 
-        scheduler.step( val_loss )
+            scheduler.step(val_loss)
 
-        if (epoch + 1) % save_frequency == 0:
-            periodic_checkpoint_path = os.path.join( checkpoint_dir, f'model_checkpoint_epoch_{epoch+1}.pth')
-            # TODO: add the right path below
-            torch.save( model.state_dict(), f'/content/drive/MyDrive/Colab Notebooks/unet-checkpoints/model_checkpoint_epoch_{epoch+1}.pth')
-            print( f"Periodic checkpoint saved: Epoch {epoch+1}, Validation Loss: {val_loss:.4f}")
+            if (epoch + 1) % save_frequency == 0:
+                periodic_checkpoint_path = os.path.join(checkpoint_dir, f'model_checkpoint_epoch_{epoch+1}.pth')
+                torch.save(model.state_dict(), periodic_checkpoint_path)
+                print(f"Periodic checkpoint saved at {periodic_checkpoint_path}")
+
+        except Exception as e:
+            print(f"Error occurred during epoch {epoch+1}: {e}")
 
 if __name__ == '__main__':
     main()
