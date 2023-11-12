@@ -32,7 +32,7 @@ class UNet( nn.Module ):
 
         # Expansive Path ( Decoder )
         self.up_conv3 = self.up_conv( 1024, 512 )
-        self.dec_conv3 = self.conv_block( 1024 + 512, 512 )
+        self.dec_conv3 = self.conv_block( 512 + 512, 512 )
         self.up_conv2 = self.up_conv( 512, 256 )
         self.dec_conv2 = self.conv_block( 512, 256 )
         self.up_conv1 = self.up_conv( 256, 128 )
