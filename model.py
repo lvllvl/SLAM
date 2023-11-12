@@ -29,7 +29,7 @@ class UNet( nn.Module ):
 
         # Expansive Path ( Decoder )
         self.up_conv3 = self.up_conv( 1024, 512 )
-        self.dec_conv3 = self.conv_block( 10224, 512 )
+        self.dec_conv3 = self.conv_block( 1024 + 512, 512 )
         self.up_conv2 = self.up_conv( 512, 256 )
         self.dec_conv2 = self.conv_block( 512, 256 )
         self.up_conv1 = self.up_conv( 256, 128 )
@@ -38,9 +38,17 @@ class UNet( nn.Module ):
         self.dec_conv0 = self.conv_block( 128, 64 )
 
         # Final output layer
-        self.final_conv = nn.Conv2d( 64, NUM_CLASSES, 1, kernel_size=1 )
+        self.final_conv = nn.Conv2d( 64, NUM_CLASSES, kernel_size=1 )
 
     def conv_block( self, in_channels, out_channels ):
+        return nn.Sequential( 
+            nn.Conv2d( in_channels, out_channels, kernel_size=3, padding=1 ),
+            nn.ReLU( inplace=True ),
+            nn.Conv2d( out_channels, out_channels, kernel_size=3, padding=1 ),
+            nn.ReLU( inplace=True )
+        )
+    
+    def up_conv( self, in_channels, out_channels ):
         return nn.ConvTranspose2d( in_channels, out_channels, kernel_size=2, stride=2 )
     
     def forward( self, x ):
@@ -60,7 +68,7 @@ class UNet( nn.Module ):
         # Expansive Path ( Decoder )
         x = self.up_conv3( x )
         x = torch.cat( (x, enc3), dim=1 )
-        x = self.dec_con3( x )
+        x = self.dec_conv3( x )
 
         x = self.up_conv2( x ) 
         x = torch.cat( (x, enc2 ), dim=1 )

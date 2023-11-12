@@ -13,7 +13,7 @@ from config import (
     LEARNING_RATE,
     BATCH_SIZE,
     NUM_EPOCHS,
-    NUM_CLASSES,
+    # NUM_CLASSES,
     MODEL_SAVE_NAME,
     SAVE_FREQUENCY,
 )
