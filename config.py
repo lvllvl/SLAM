@@ -1,9 +1,9 @@
 # config.py
 # Paths
-TRAIN_IMAGE_DIR = 'dataset_root/train/images'
-TRAIN_MASK_DIR = 'dataset_root/train/masks'
-VAL_IMAGE_DIR = 'dataset_root/val/images'
-VAL_MASK_DIR = 'dataset_root/val/masks'
+TRAIN_IMAGE_DIR = 'train/images'
+TRAIN_MASK_DIR = 'train/masks'
+VAL_IMAGE_DIR = 'val/images'
+VAL_MASK_DIR = 'val/masks'
 CHECKPOINT_DIR = '/content/drive/MyDrive/Colab Notebooks/unet-checkpoints'
 LOG_DIR = 'path/to/logs'
 
