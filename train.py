@@ -23,7 +23,7 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
     running_loss = 0.0
 
     for images, masks in dataloader:
-        images, masks = images.to(device), masks.to(device)
+        images, masks = images.to(device), masks.to(device).long() # Convert masks to long to match model type
 
         # Forward pass
         outputs = model(images)
