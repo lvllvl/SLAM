@@ -17,6 +17,9 @@ import torch.nn.functional as F
 
 class UNet( nn.Module ):
 
+    def up_conv( self, in_channels, out_channels ):
+        return nn.ConvTranspose2d( in_channels, out_channels, kernel_size=2, stride=2 )
+    
     def __init__( self ):
         super( UNet, self ).__init__()
 
@@ -47,9 +50,6 @@ class UNet( nn.Module ):
             nn.Conv2d( out_channels, out_channels, kernel_size=3, padding=1 ),
             nn.ReLU( inplace=True )
         )
-    
-    def up_conv( self, in_channels, out_channels ):
-        return nn.ConvTranspose2d( in_channels, out_channels, kernel_size=2, stride=2 )
     
     def forward( self, x ):
 
