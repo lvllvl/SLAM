@@ -33,9 +33,10 @@ class SegmentationDataset(Dataset):
         image = Image.open(image_path).convert("RGB")
         mask = Image.open(mask_path).convert("L")  # Assuming mask is a grayscale image
         
-        if self.transform is not None:
-            image = self.transform(image)
-            mask = self.transform(mask)
+        if self.image_transform is not None:
+            image = self.image_transform(image)
+        if self.mask_transform is not None:
+            mask = self.mask_transform(mask)
         
         return image, mask
 
