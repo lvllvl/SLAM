@@ -4,6 +4,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from model import UNet
 from dataloader import get_dataloaders
 import os
+import time
 from config import (
     TRAIN_IMAGE_DIR,
     TRAIN_MASK_DIR,
@@ -18,11 +19,28 @@ from config import (
     SAVE_FREQUENCY,
 )
 
+def validate( model, dataloader, criterion, device ):
+
+    model.eval()
+    running_loss = 0.0
+    total_batches = len( dataloader )
+
+    with torch.no_grad():
+        for batch_idx, ( images, masks ) in enumerate( dataloader ):
+            images, masks = images.to( device ), masks.to( device ).long()
+            outputs = model( images )
+            loss = criterion( outputs, masks )
+            running_loss += loss.item()
+            print( f'Validation - Batch { batch_idx + 1 } / { total_batches }, Current Loss: { loss.item():.4f}' ) 
+    
+    return running_loss / total_batches
+
 def train_one_epoch(model, dataloader, optimizer, criterion, device):
     model.train()
     running_loss = 0.0
+    total_batches = len( dataloader ) 
 
-    for images, masks in dataloader:
+    for batch_idx, (images, masks) in enumerate(dataloader):
         images, masks = images.to(device), masks.to(device).long() # Convert masks to long to match model type
 
         # Forward pass
@@ -41,20 +59,9 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
         optimizer.step()
 
         running_loss += loss.item()
+        print( f'Batch {batch_idx + 1 } / {total_batches }, Current Loss: {loss.item():.4f}' )
 
-    return running_loss / len(dataloader)
-
-def validate( model, dataloader, criterion, device ):
-    model.eval()
-    running_loss = 0.0
-    with torch.no_grad():
-        for images, masks in dataloader:
-            images, masks = images.to( device ), masks.to( device )
-            outputs = model( images )
-            loss = criterion( outputs, masks )
-            running_loss += loss.item()
-    val_loss = running_loss / len( dataloader ) 
-    return val_loss
+    return running_loss / total_batches 
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

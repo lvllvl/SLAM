@@ -28,17 +28,22 @@ class SegmentationDataset(Dataset):
         return len(self.images)
     
     def __getitem__(self, idx):
-        image_path = os.path.join(self.image_dir, self.images[idx])
-        mask_path = os.path.join(self.mask_dir, self.images[idx].replace('.png', '_mask.png'))
-        image = Image.open(image_path).convert("RGB")
-        mask = Image.open(mask_path).convert("L")  # Assuming mask is a grayscale image
+        try:
+
+            image_path = os.path.join(self.image_dir, self.images[idx])
+            mask_path = os.path.join(self.mask_dir, self.images[idx].replace('.png', '_mask.png'))
+            image = Image.open(image_path).convert("RGB")
+            mask = Image.open(mask_path).convert("L")  # Assuming mask is a grayscale image
+            
+            if self.image_transform is not None:
+                image = self.image_transform(image)
+            if self.mask_transform is not None:
+                mask = self.mask_transform(mask)
         
-        if self.image_transform is not None:
-            image = self.image_transform(image)
-        if self.mask_transform is not None:
-            mask = self.mask_transform(mask)
-        
-        return image, mask
+            return image, mask
+        except FileNotFoundError as e:
+            print( f"File not found: {e.filename}")
+            raise
 
 # Define transformations for images and masks
 image_transform = transforms.Compose([
@@ -68,8 +73,8 @@ val_dataset = SegmentationDataset(
 )
 
 # Create data loaders
-train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4 )
+val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4 )
 
 # Iterate over train_loader and val_loader during training and validation
 def get_dataloaders(train_dir, train_maskdir, val_dir, val_maskdir, batch_size):
