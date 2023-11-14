@@ -12,6 +12,7 @@ from config import (
     NORMALIZE_STD,
     TRAIN_IMAGE_DIR,
     TRAIN_MASK_DIR,
+    NUM_OF_WORKERS,
     VAL_IMAGE_DIR,
     VAL_MASK_DIR,
 )
@@ -73,8 +74,8 @@ val_dataset = SegmentationDataset(
 )
 
 # Create data loaders
-train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4 )
-val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4 )
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_OF_WORKERS )
+val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_OF_WORKERS )
 
 # Iterate over train_loader and val_loader during training and validation
 def get_dataloaders(train_dir, train_maskdir, val_dir, val_maskdir, batch_size):

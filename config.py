@@ -24,3 +24,6 @@ NORMALIZE_STD = [0.229, 0.224, 0.225]
 
 # Training settings
 SAVE_FREQUENCY = 5  # How often to save checkpoints
+
+# Dataloader settings
+NUM_OF_WORKERS = 2  # Number of threads to use for data loading

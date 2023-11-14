@@ -17,14 +17,14 @@ def validate( model, dataloader, criterion, device ):
 
     with torch.no_grad():
         for batch_idx, ( images, masks ) in enumerate( dataloader ):
-            last_batch_idx = batch_idx # update the last batch index
             images, masks = images.to( device ), masks.to( device ).long()
             outputs = model( images )
             loss = criterion( outputs, masks )
             running_loss += loss.item()
             print( f'Validation - Batch { batch_idx + 1 } / { total_batches }, Current Loss: { loss.item():.4f}' ) 
-    
-    return running_loss / total_batches, last_batch_idx
+            last_batch_idx = batch_idx # update the last batch index
+    average_loss = running_loss / total_batches    
+    return average_loss, last_batch_idx
 
 def train_one_epoch(model, dataloader, optimizer, criterion, device):
     model.train()
@@ -91,7 +91,7 @@ def main():
         with profile( activities=[ ProfilerActivity.CPU, ProfilerActivity.CUDA ], record_shapes=True ) as prof:
             try:
                 train_loss = train_one_epoch(model, train_loader, optimizer, criterion, device)
-                val_loss = validate(model, val_loader, criterion, device)
+                val_loss, val_last_batch = validate(model, val_loader, criterion, device)
 
                 epoch_end_time = time.time()
                 epoch_duration = epoch_end_time - epoch_start_time
@@ -111,10 +111,10 @@ def main():
                     print(f"Periodic checkpoint saved at {periodic_checkpoint_path}")
 
             except Exception as e:
-                error_message = f"Error during epoch {epoch+1}"
+                
                 # decide which batch index to report based on where the error occured
-                report_batch_idx = val_last_batch if val_last_batch is not None else train_last_batch 
-                error_message += f", Batch {report_batch_idx+1}"
+                report_batch_idx = val_last_batch if val_last_batch is not None else train_last_batch
+                error_message = f"Error during epoch {epoch+1}, Batch {report_batch_idx+1}"
                 print( error_message )
         # Stop profiler
         print( prof.key_averages().table( sort_by="cuda_time_total", row_limit=10 ) )
