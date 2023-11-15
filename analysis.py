@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import random
 import numpy as np
+import os
 
 def visualize_data(image_dir, mask_dir, num_samples=5):
     image_files = os.listdir(image_dir)
