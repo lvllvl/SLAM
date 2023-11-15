@@ -66,8 +66,8 @@ def add_suffix_to_mask_filenames(image_dir, mask_dir, suffix):
 
 if __name__ == '__main__':
     # Clone repos
-    clone_repo('https://github.com/lvllvl/SLAM.git', 'SLAM')
-    clone_repo('https://github.com/commaai/comma10k.git', 'comma10k')
+    # clone_repo('https://github.com/lvllvl/SLAM.git', 'SLAM')
+    # clone_repo('https://github.com/commaai/comma10k.git', 'comma10k')
     
     # Create directories for training and validation
     create_directory('dataset_root/train/images')
