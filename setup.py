@@ -1,5 +1,6 @@
 import os
 import shutil
+import matplotlib.pyplot as plt
 
 def clone_repo(repo_url, dest_path):
     if os.path.exists(dest_path):
@@ -61,7 +62,10 @@ def add_suffix_to_mask_filenames(image_dir, mask_dir, suffix):
 
         if actual_mask_file in mask_files:
             os.rename(os.path.join(mask_dir, actual_mask_file), os.path.join(mask_dir, expected_mask_file))
-            print(f"Renamed {actual_mask_file} to {expected_mask_file}")
+            # print(f"Renamed {actual_mask_file} to {expected_mask_file}")
+    
+    print("Done renaming mask files.\n\n\n")
+
 
 
 if __name__ == '__main__':
