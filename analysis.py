@@ -11,8 +11,13 @@ def visualize_data(image_dir, mask_dir, num_samples=5):
 
     for image_file in image_files:
         img_path = os.path.join(image_dir, image_file)
-        mask_path = os.path.join(mask_dir, image_file.replace('.jpg', '_mask.jpg'))  # adjust mask file extension if needed
+        mask_file_name = image_file.replace('.png', '_mask.png' )
+        mask_path = os.path.join( mask_dir, mask_file_name )
 
+        if not os.path.exists( mask_path ):
+            print( f"Mask file not found: {mask_path}" )
+            continue
+        
         img = Image.open(img_path)
         mask = Image.open(mask_path)
 
